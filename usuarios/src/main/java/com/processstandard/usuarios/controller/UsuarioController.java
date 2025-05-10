@@ -3,6 +3,7 @@ package com.processstandard.usuarios.controller;
 import com.processstandard.usuarios.model.Usuario;
 import com.processstandard.usuarios.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,35 +16,42 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    // GET: listar todos los usuarios
+    // Obtiene la lista de todos los usuarios registrados
     @GetMapping
     public List<Usuario> listarUsuarios() {
         return usuarioService.obtenerTodos();
     }
 
-    // GET: obtener usuario por ID
+    // Consulta un usuario por su ID
     @GetMapping("/{id}")
-    public Optional<Usuario> obtenerUsuarioPorId(@PathVariable int id) {
-        return usuarioService.obtenerPorId(id);
+    public ResponseEntity<Usuario> obtenerUsuarioPorId(@PathVariable int id) {
+        Optional<Usuario> usuario = usuarioService.obtenerPorId(id);
+        return usuario.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // POST: crear usuario
+    // Registra un nuevo usuario en la base de datos
     @PostMapping
-    public Usuario crearUsuario(@RequestBody Usuario usuario) {
-        return usuarioService.crearUsuario(usuario);
+    public ResponseEntity<Usuario> crearUsuario(@RequestBody Usuario usuario) {
+        Usuario creado = usuarioService.crearUsuario(usuario);
+        return ResponseEntity.status(201).body(creado);
     }
 
-    // PUT: actualizar usuario
+    // Actualiza los datos de un usuario existente
     @PutMapping("/{id}")
-    public Usuario actualizarUsuario(@PathVariable int id, @RequestBody Usuario usuario) {
+    public ResponseEntity<Usuario> actualizarUsuario(@PathVariable int id, @RequestBody Usuario usuario) {
         usuario.setId(id);
-        return usuarioService.actualizarUsuario(usuario);
+        Usuario actualizado = usuarioService.actualizarUsuario(usuario);
+        return ResponseEntity.ok(actualizado);
     }
 
-    // DELETE: eliminar usuario
+    // Elimina un usuario por su ID
     @DeleteMapping("/{id}")
-    public void eliminarUsuario(@PathVariable int id) {
+    public ResponseEntity<Void> eliminarUsuario(@PathVariable int id) {
+        if (usuarioService.existeUsuario(id)) {
         usuarioService.eliminarUsuario(id);
+        return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build(); 
+        }
     }
-    
 }

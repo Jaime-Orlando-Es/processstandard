@@ -38,6 +38,10 @@ public class UsuarioService {
     public void eliminarUsuario(int id) {
         usuarioRepository.deleteById(id);
     }
-    
-    
+
+    // Verificar si existe un usuario por ID
+    public boolean existeUsuario(int id) {
+        return usuarioRepository.existsById(id);
+    }
+       
 }
