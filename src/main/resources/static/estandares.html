@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Listado de Estándares</title>
+</head>
+<body>
+  <h1>Estándares de Producción</h1>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Máquina</th>
+        <th>Referencia</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-estandares"></tbody>
+  </table>
+
+  <script>
+    fetch('/estandares')
+      .then(response => response.json())
+      .then(data => {
+        const tabla = document.getElementById('tabla-estandares');
+        data.forEach(est => {
+          tabla.innerHTML += `
+            <tr>
+              <td>${est.id}</td>
+              <td>${est.maquina}</td>
+              <td>${est.referencia}</td>
+            </tr>
+          `;
+        });
+      })
+      .catch(error => console.error('Error cargando los datos:', error));
+  </script>
+</body>
+</html>
